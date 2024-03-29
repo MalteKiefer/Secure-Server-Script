@@ -147,7 +147,7 @@ nala_manager() {
 
     if [[ $nala == [yY] ]];
     then
-        apt install -qq -y nala 2>&1
+        apt install -qq -y nala > /dev/null 2>&1
         echo -e "[...] Installed nala packagemanager:  \t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}
     else
         echo -e "[...] Installed nala packagemanager:  \t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}  
