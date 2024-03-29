@@ -70,7 +70,7 @@ count_updates() {
 
 check_os() {
     . /etc/os-release
-    if [ "$ID" == 'debian' ]
+    if [ "$ID" == "debian" ]
     then
         echo -e "[...] Check if system is a Debian installation:  \t\t ${aCOLOUR[o]} [TRUE]"${COLOUR_RESET}
     else
