@@ -90,6 +90,34 @@ check_os_version() {
     fi    
 }
 
+update_sources_list() {
+    apt install -qq -y gnupg2 dirmngr apt-transport-https ca-certificates lsb-release >/dev/null 2>&1
+    echo -e "$GRAY_LINE"
+    read -p "Do you want to update the sources.list file? (y/n): " soucres
+    echo -e "$GRAY_LINE"
+    if [[ $soucres == [yY] ]];
+    then
+        cp /etc/apt/sources.list /etc/apt/sources.list.bak
+cat << EOF > /etc/apt/soucres.list
+deb http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
+deb-src http://deb.debian.org/debian/ bookworm main contrib non-free non-free-firmware
+
+deb http://deb.debian.org/debian/ bookworm-updates main contrib non-free non-free-firmware
+deb-src http://deb.debian.org/debian/ bookworm-updates main contrib non-free non-free-firmware
+
+deb http://deb.debian.org/debian/ bookworm-backports main contrib non-free non-free-firmware
+deb-src http://deb.debian.org/debian/ bookworm-backports main contrib non-free non-free-firmware
+
+deb http://security.debian.org/debian-security/ bookworm-security main contrib non-free non-free-firmware
+deb-src http://security.debian.org/debian-security/ bookworm-security main contrib non-free non-free-firmware
+EOF
+        apt update > /dev/null 2>&1
+        echo -e "[...] Updated sources.list file:  \t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}
+    else
+        echo -e "[...] Updated sources.list file:  \t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}  
+    fi  
+}
+
 update_system() {
 
     if [ $UP_COUNT -ne 0 ];
@@ -119,8 +147,8 @@ basic_packages() {
 
     if [[ $basicpackages == [yY] ]];
     then
-        apt install -qq -y wget apt-transport-https ca-certificates lsb-release curl git htop ufw vim-nox htop command-not-found apt-file >/dev/null 2>&1
-        apt install -qq -y fail2ban apt-listchanges gnupg2 dirmngr needrestart sudo unattended-upgrades screen rsyslog rsync net-tools >/dev/null 2>&1
+        apt install -qq -y wget ca-certificates lsb-release curl git htop ufw vim-nox htop command-not-found apt-file >/dev/null 2>&1
+        apt install -qq -y fail2ban apt-listchanges needrestart sudo unattended-upgrades screen rsyslog rsync net-tools >/dev/null 2>&1
         apt-file update && update-command-not-found
         /etc/cron.daily/plocate
         echo -e "[...] Installed basic packages:  \t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}
@@ -519,10 +547,11 @@ header
 check_root
 check_os
 check_os_version
-set_hostname
-setup_timeserver
+update_sources_list
 update_system
 basic_packages
+set_hostname
+setup_timeserver
 setup_ssh
 secure_ssh
 setup_ufw
