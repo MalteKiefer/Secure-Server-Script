@@ -4,7 +4,7 @@
 ########################## VARS ##########################
 ##########################################################
 
-SV_VERSION="0.1"
+SV_VERSION="0.2"
 COLOUR_RESET='\e[0m'
 aCOLOUR=(
 
@@ -41,7 +41,7 @@ check_root() {
     if [ "$EUID" -ne 0 ]
         then 
             echo -e "[...] Check if user is root:  \t\t ${aCOLOUR[3]} [FALSE]"${COLOUR_RESET}
-        exit
+            exit
     else 
             echo -e "[...] Check if user is root:  \t\t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}       
     fi   
@@ -66,6 +66,28 @@ count_updates() {
     apt update >/dev/null 2>&1
     UP_COUNT=$(apt-get -s -o Debug::NoLocking=true upgrade | grep -c ^Inst)
     clear
+}
+
+check_os() {
+    . /etc/os-release
+    if [ $ID -ne 'debian' ]
+    then
+        echo -e "[...] Check if system is a Debian installation:  \t\t ${aCOLOUR[3]} [FALSE]"${COLOUR_RESET}
+        exit
+    else
+        echo -e "[...] Check if system is a Debian installation:  \t\t ${aCOLOUR[o]} [TRUE]"${COLOUR_RESET}
+    fi
+}
+
+check_os_version() {
+    . /etc/os-release
+    if [ $VERSION_ID -ne 12 ]
+    then
+        echo -e "[...] Check if Debian Version 12:  \t\t ${aCOLOUR[3]} [FALSE]"${COLOUR_RESET}
+        exit
+    else
+        echo -e "[...] Check if Debian Version 12:  \t\t ${aCOLOUR[o]} [TRUE]"${COLOUR_RESET}
+    fi    
 }
 
 update_system() {
@@ -495,6 +517,8 @@ clear
 count_updates
 header
 check_root
+check_os
+check_os_version
 set_hostname
 setup_timeserver
 update_system
