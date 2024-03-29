@@ -222,7 +222,7 @@ secure_ssh() {
     then
         cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
 cat <<EOF > /etc/ssh/sshd_config
-PermitRootLogin yes
+PermitRootLogin WITHOUT-PASSWORD
 
 Port 22
 
@@ -244,7 +244,7 @@ KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256@libssh.org,di
 
 LoginGraceTime 30s
 MaxAuthTries 2
-MaxSessions 10
+MaxSessions 2
 MaxStartups 10:30:60
 
 PubkeyAuthentication yes
@@ -270,7 +270,7 @@ GSSAPICleanupCredentials yes
 TCPKeepAlive no
 
 ClientAliveInterval 300
-ClientAliveCountMax 3
+ClientAliveCountMax 2
 
 PermitTunnel no
 
@@ -288,7 +288,7 @@ PermitUserEnvironment no
 Compression no
 UseDNS no
 PrintMotd no
-PrintLastLog no
+PrintLastLog yes
 Banner none
 DebianBanner no
 
@@ -583,6 +583,24 @@ malware_scan() {
     fi
 }
 
+audit() {
+    echo -e "$GRAY_LINE"
+    read -p "Do you want to install a audit software: " audit
+    echo -e "$GRAY_LINE"
+
+    if [[ $audit == [yY] ]];
+    then
+        curl -fsSL https://packages.cisofy.com/keys/cisofy-software-public.key | gpg --dearmor -o /etc/apt/trusted.gpg.d/cisofy-software-public.gpg 
+        echo "deb [arch=amd64,arm64 signed-by=/etc/apt/trusted.gpg.d/cisofy-software-public.gpg] https://packages.cisofy.com/community/lynis/deb/ stable main" | tee /etc/apt/sources.list.d/cisofy-lynis.list
+        apt -y update >/dev/null 2>&1
+        apt -y install lynis host >/dev/null 2>&1
+        lynis update info >/dev/null 2>&1
+        echo -e "[...] Audit software installed:  \t\t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
+    else
+        echo -e "[...] Audit software installed:  \t\t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}  
+    fi   
+}
+
 ##########################################################
 ########################## MAIN ##########################
 ##########################################################
@@ -605,3 +623,4 @@ setup_ufw
 setup_fail2ban
 secure_os
 malware_scan
+audit
