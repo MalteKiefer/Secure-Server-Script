@@ -505,6 +505,7 @@ secure_os() {
         chmod 0600 /boot/System.map-* >/dev/null 2>&1
         depmod -ae >/dev/null 2>&1
         update-initramfs -u >/dev/null 2>&1
+        sysctl -p >/dev/null 2>&1
 
 cat << EOF > /etc/apt/apt.conf.d/51custom-unattended-upgrades
 // Enable the update/upgrade script (0=disable)
@@ -577,9 +578,9 @@ malware_scan() {
     then
         echo -e "${aCOLOUR[2]}You will only see a output when the scan found something."${COLOUR_RESET}
         rkhunter -c --rwo
-        echo -e "[...] Malware scan:  \t\t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
+        echo -e "[...] Malware scan:  \t\t\t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
     else
-        echo -e "[...] Malware scan:  \t\t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}  
+        echo -e "[...] Malware scan:  \t\t\t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}  
     fi
 }
 
@@ -595,9 +596,9 @@ audit() {
         apt -y update >/dev/null 2>&1
         apt -y install lynis host >/dev/null 2>&1
         lynis update info >/dev/null 2>&1
-        echo -e "[...] Audit software installed:  \t\t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
+        echo -e "[...] Audit software installed:  \t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
     else
-        echo -e "[...] Audit software installed:  \t\t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}  
+        echo -e "[...] Audit software installed:  \t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}  
     fi   
 }
 
