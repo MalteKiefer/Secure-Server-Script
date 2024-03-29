@@ -585,7 +585,7 @@ malware_scan() {
 
 audit() {
     echo -e "$GRAY_LINE"
-    read -p "Do you want to install a audit software: " audit
+    read -p "Do you want to install a audit software? (y/n): " audit
     echo -e "$GRAY_LINE"
 
     if [[ $audit == [yY] ]];
@@ -599,6 +599,21 @@ audit() {
     else
         echo -e "[...] Audit software installed:  \t\t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}  
     fi   
+}
+
+make_audit() {
+    echo -e "$GRAY_LINE"
+    read -p "Do you want to run an audit? (y/n): " auditrun
+    echo -e "$GRAY_LINE"
+
+    if [[ $auditrun == [yY] ]];
+    then
+        lynis update info >/dev/null 2>&1
+        lynis audit system
+        echo -e "[...] Run Audit of the system: \t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
+    else
+        echo -e "[...] Run Audit of the system: \t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}  
+    fi       
 }
 
 ##########################################################
@@ -624,3 +639,4 @@ setup_fail2ban
 secure_os
 malware_scan
 audit
+make_audit
