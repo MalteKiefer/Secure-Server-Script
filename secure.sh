@@ -148,6 +148,21 @@ nala_manager() {
     if [[ $nala == [yY] ]];
     then
         apt install -qq -y nala > /dev/null 2>&1
+cat << EOF >> /root/.bashrc
+
+apt() { 
+  command nala "$@"
+}
+sudo() {
+  if [ "$1" = "apt" ]; then
+    shift
+    command sudo nala "$@"
+  else
+    command sudo "$@"
+  fi
+}
+EOF
+        source /root/.bashrc
         echo -e "[...] Installed nala packagemanager:  \t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}
     else
         echo -e "[...] Installed nala packagemanager:  \t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}  
