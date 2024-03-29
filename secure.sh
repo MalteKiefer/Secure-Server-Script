@@ -72,9 +72,9 @@ check_os() {
     . /etc/os-release
     if [ "$ID" == "debian" ]
     then
-        echo -e "[...] Check if system is a Debian installation:  \t\t ${aCOLOUR[o]} [TRUE]"${COLOUR_RESET}
+        echo -e "[...] System is a Debian machine:  \t ${aCOLOUR[o]} [TRUE]"${COLOUR_RESET}
     else
-        echo -e "[...] Check if system is a Debian installation:  \t\t ${aCOLOUR[3]} [FALSE]"${COLOUR_RESET}
+        echo -e "[...] System is a Debian machine:  \t ${aCOLOUR[3]} [FALSE]"${COLOUR_RESET}
         exit
     fi
 }
@@ -83,9 +83,9 @@ check_os_version() {
     . /etc/os-release
     if [ "$VERSION_ID" == "12" ]
     then
-            echo -e "[...] Check if Debian Version 12:  \t\t ${aCOLOUR[o]} [TRUE]"${COLOUR_RESET}
+        echo -e "[...] Check if Debian is Version 12:  \t ${aCOLOUR[o]} [TRUE]"${COLOUR_RESET}
     else
-        echo -e "[...] Check if Debian Version 12:  \t\t ${aCOLOUR[3]} [FALSE]"${COLOUR_RESET}
+        echo -e "[...] Check if Debian is Version 12:  \t ${aCOLOUR[3]} [FALSE]"${COLOUR_RESET}
         exit
     fi    
 }
