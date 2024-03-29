@@ -43,7 +43,7 @@ check_root() {
             echo -e "[...] Check if user is root:  \t\t ${aCOLOUR[3]} [FALSE]"${COLOUR_RESET}
             exit
     else 
-            echo -e "[...] Check if user is root:  \t\t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}       
+            echo -e "[...] Check if user is root:  \t\t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}       
     fi   
 }
 
@@ -56,7 +56,7 @@ set_hostname() {
         read -p "Enter hostname as FQDN: " hostname
         echo -e "$GRAY_LINE"
         hostnamectl set-hostname $hostname
-        echo -e "[...] Set hostname:  \t\t\t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}
+        echo -e "[...] Set hostname:  \t\t\t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
     else
         echo -e "[...] Set hostname:  \t\t\t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}
     fi
@@ -72,7 +72,7 @@ check_os() {
     . /etc/os-release
     if [ "$ID" == "debian" ]
     then
-        echo -e "[...] System is a Debian machine:  \t ${aCOLOUR[o]} [TRUE]"${COLOUR_RESET}
+        echo -e "[...] System is a Debian machine:  \t ${aCOLOUR[o]} [DONE]"${COLOUR_RESET}
     else
         echo -e "[...] System is a Debian machine:  \t ${aCOLOUR[3]} [FALSE]"${COLOUR_RESET}
         exit
@@ -83,7 +83,7 @@ check_os_version() {
     . /etc/os-release
     if [ "$VERSION_ID" == "12" ]
     then
-        echo -e "[...] Check if Debian is Version 12:  \t ${aCOLOUR[o]} [TRUE]"${COLOUR_RESET}
+        echo -e "[...] Check if Debian is Version 12:  \t ${aCOLOUR[o]} [DONE]"${COLOUR_RESET}
     else
         echo -e "[...] Check if Debian is Version 12:  \t ${aCOLOUR[3]} [FALSE]"${COLOUR_RESET}
         exit
@@ -112,7 +112,7 @@ deb http://security.debian.org/debian-security/ bookworm-security main contrib n
 deb-src http://security.debian.org/debian-security/ bookworm-security main contrib non-free non-free-firmware
 EOF
         apt update > /dev/null 2>&1
-        echo -e "[...] Updated sources.list file:  \t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}
+        echo -e "[...] Updated sources.list file:  \t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
     else
         echo -e "[...] Updated sources.list file:  \t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}  
     fi  
@@ -131,12 +131,12 @@ update_system() {
             apt dist-upgrade -y >/dev/null 2>&1
             apt clean >/dev/null 2>&1
             apt-get autoremove --purge -y >/dev/null 2>&1
-            echo -e "[...] System up-to date:  \t\t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}
+            echo -e "[...] System up-to date:  \t\t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
         else
             echo -e "[...] System up-to date:  \t\t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}
         fi
     else
-        echo -e "[...] System up-to date:  \t\t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}  
+        echo -e "[...] System up-to date:  \t\t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}  
     fi
 }
 
@@ -163,7 +163,7 @@ sudo() {
 }
 EOF
         source /root/.bashrc
-        echo -e "[...] Installed nala packagemanager:  \t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}
+        echo -e "[...] Installed nala packagemanager:  \t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
     else
         echo -e "[...] Installed nala packagemanager:  \t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}  
     fi   
@@ -180,9 +180,9 @@ basic_packages() {
         apt install -qq -y fail2ban rkhunter apt-listchanges needrestart sudo unattended-upgrades screen rsyslog rsync net-tools >/dev/null 2>&1
         apt-file update > /dev/null 2>&1
         update-command-not-found > /dev/null 2>&1
-        bas /etc/cron.daily/plocate 2>&1
+        bash /etc/cron.daily/plocate 2>&1
         rkhunter --propupd > /dev/null 2>&1
-        echo -e "[...] Installed basic packages:  \t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}
+        echo -e "[...] Installed basic packages:  \t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
     else
         echo -e "[...] Installed basic packages:  \t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}  
     fi
@@ -194,7 +194,7 @@ setup_timeserver() {
     sed -i '/^NTP/d' /etc/systemd/timesyncd.conf
     echo "NTP=ntp1.dismail.de ntp2.dismail.de" >> /etc/systemd/timesyncd.conf
     timedatectl set-ntp true
-    echo -e "[...] Set up timeserver:  \t\t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}
+    echo -e "[...] Set up timeserver:  \t\t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
 }
 
 setup_ssh() {
@@ -208,7 +208,7 @@ setup_ssh() {
         echo -e "$GRAY_LINE"
         echo $sshkey >> /root/.ssh/authorized_keys
         /etc/cron.daily/plocate
-        echo -e "[...] SSH Key added:  \t\t\t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}
+        echo -e "[...] SSH Key added:  \t\t\t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
     else
         echo -e "[...] SSH Key added:  \t\t\t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}  
     fi   
@@ -306,14 +306,14 @@ Match Group sftponly
     X11Forwarding no
 
 EOF
-        echo -e "[...] SSH security enhanced:  \t\t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}
+        echo -e "[...] SSH security enhanced:  \t\t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
         echo -e "$GRAY_LINE"
         read -p "Do you want to restart the SSH service? (y/n): " sshrestart
         echo -e "$GRAY_LINE"
         if [[ $sshrestart == [yY] ]];
         then
             service ssh restart
-            echo -e "[...] SSH service restarted:  \t\t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}
+            echo -e "[...] SSH service restarted:  \t\t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
         else
             echo -e "[...] SSH service restarted:  \t\t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}
         fi
@@ -333,7 +333,7 @@ setup_ufw() {
         ufw logging medium > /dev/null 2>&1
         ufw allow ssh > /dev/null 2>&1
         ufw --force enable > /dev/null 2>&1
-        echo -e "[...] Firewall configured:  \t\t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}
+        echo -e "[...] Firewall configured:  \t\t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
         echo -e "$GRAY_LINE"
         read -p "Do you to see the firewall configuration? (y/n): " ufwconfig
         echo -e "$GRAY_LINE"
@@ -385,7 +385,7 @@ ignoreregex =
 EOF
         systemctl enable fail2ban >/dev/null 2>&1
         systemctl start fail2ban >/dev/null 2>&1
-        echo -e "[...] Fail2Ban configured:  \t\t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}
+        echo -e "[...] Fail2Ban configured:  \t\t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
     else
         echo -e "[...] Fail2Ban configured:  \t\t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}
     fi     
@@ -562,7 +562,7 @@ Unattended-Upgrade::Automatic-Reboot "false";
 Unattended-Upgrade::Automatic-Reboot-WithUsers "false";
 EOF
 
-        echo -e "[...] System secured:  \t\t\t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}
+        echo -e "[...] System secured:  \t\t\t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
     else
         echo -e "[...] System secured:  \t\t\t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}
     fi 
@@ -576,7 +576,7 @@ malware_scan() {
     if [[ $malwarescan == [yY] ]];
     then
         echo -e "${aCOLOUR[2]}You will only see a output when the scan found something."${COLOUR_RESET}
-        rkhunter -c -rwo
+        rkhunter -c --rwo
         echo -e "[...] Malware scan:  \t\t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
     else
         echo -e "[...] Malware scan:  \t\t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}  
