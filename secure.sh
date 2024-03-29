@@ -178,8 +178,9 @@ basic_packages() {
     then
         apt install -qq -y wget ca-certificates lsb-release curl git htop ufw vim-nox htop command-not-found apt-file >/dev/null 2>&1
         apt install -qq -y fail2ban rkhunter apt-listchanges needrestart sudo unattended-upgrades screen rsyslog rsync net-tools >/dev/null 2>&1
-        apt-file update && update-command-not-found
-        /etc/cron.daily/plocate
+        apt-file update > /dev/null 2>&1
+        update-command-not-found > /dev/null 2>&1
+        bas /etc/cron.daily/plocate 2>&1
         rkhunter --propupd > /dev/null 2>&1
         echo -e "[...] Installed basic packages:  \t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}
     else
