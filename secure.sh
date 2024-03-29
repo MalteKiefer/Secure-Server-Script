@@ -177,9 +177,10 @@ basic_packages() {
     if [[ $basicpackages == [yY] ]];
     then
         apt install -qq -y wget ca-certificates lsb-release curl git htop ufw vim-nox htop command-not-found apt-file >/dev/null 2>&1
-        apt install -qq -y fail2ban apt-listchanges needrestart sudo unattended-upgrades screen rsyslog rsync net-tools >/dev/null 2>&1
+        apt install -qq -y fail2ban rkhunter apt-listchanges needrestart sudo unattended-upgrades screen rsyslog rsync net-tools >/dev/null 2>&1
         apt-file update && update-command-not-found
         /etc/cron.daily/plocate
+        rkhunter --propupd > /dev/null 2>&1
         echo -e "[...] Installed basic packages:  \t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}
     else
         echo -e "[...] Installed basic packages:  \t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}  
@@ -566,6 +567,21 @@ EOF
     fi 
 }
 
+malware_scan() {
+    echo -e "$GRAY_LINE"
+    read -p "Do you want to make a malware scan, can take up to 5 minutes (y/n): " malwarescan
+    echo -e "$GRAY_LINE"
+
+    if [[ $malwarescan == [yY] ]];
+    then
+        echo -e "${aCOLOUR[2]}You will only see a output when the scan found something."${COLOUR_RESET}
+        rkhunter -c -rwo
+        echo -e "[...] Malware scan:  \t\t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
+    else
+        echo -e "[...] Malware scan:  \t\t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}  
+    fi
+}
+
 ##########################################################
 ########################## MAIN ##########################
 ##########################################################
@@ -587,3 +603,4 @@ secure_ssh
 setup_ufw
 setup_fail2ban
 secure_os
+malware_scan
