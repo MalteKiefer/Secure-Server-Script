@@ -140,6 +140,20 @@ update_system() {
     fi
 }
 
+nala_manager() {
+    echo -e "$GRAY_LINE"
+    read -p "Do you want to use nala as packagemanager (instead of apt)? (y/n): " nala
+    echo -e "$GRAY_LINE"
+
+    if [[ $nala == [yY] ]];
+    then
+        apt install -qq -y nala 2>&1
+        echo -e "[...] Installed nala packagemanager:  \t ${aCOLOUR[0]} [TRUE]"${COLOUR_RESET}
+    else
+        echo -e "[...] Installed nala packagemanager:  \t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}  
+    fi   
+}
+
 basic_packages() {
     echo -e "$GRAY_LINE"
     read -p "Do you want to install the basic packages? (y/n): " basicpackages
@@ -549,6 +563,7 @@ check_os
 check_os_version
 update_sources_list
 update_system
+nala_manager
 basic_packages
 set_hostname
 setup_timeserver
