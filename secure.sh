@@ -177,10 +177,16 @@ basic_packages() {
     if [[ $basicpackages == [yY] ]];
     then
         apt install -qq -y wget ca-certificates lsb-release curl git htop ufw vim-nox htop command-not-found apt-file >/dev/null 2>&1
-        apt install -qq -y fail2ban rkhunter apt-listchanges needrestart sudo unattended-upgrades screen rsyslog rsync net-tools >/dev/null 2>&1
+        apt install -qq -y rkhunter apt-listchanges needrestart sudo unattended-upgrades screen rsyslog rsync net-tools >/dev/null 2>&1
         apt-file update > /dev/null 2>&1
         update-command-not-found > /dev/null 2>&1
         bash /etc/cron.daily/plocate 2>&1
+        sed -i "s/UPDATE_MIRRORS=0/UPDATE_MIRRORS=1/g" /etc/rkhunter.conf
+        sed -i "s/WEB_CMD=//g" /etc/rkhunter.conf
+        echo "PKGMGR=DPKG" >> /etc/rkhunter.conf
+        echo "PHALANX2_DIRTEST=1" >> /etc/rkhunter.conf
+        echo "USE_LOOKING=1" >> /etc/rkhunter.conf
+        echo "SHOW_SUMMARY_WARNINGS_NUMBER=1" >> /etc/rkhunter.conf
         rkhunter --propupd > /dev/null 2>&1
         echo -e "[...] Installed basic packages:  \t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
     else
@@ -229,18 +235,18 @@ Port 22
 AddressFamily any
 ListenAddress 0.0.0.0
 
+HostKey /etc/ssh/ssh_host_ed25519_key
 HostKey /etc/ssh/ssh_host_rsa_key
 HostKey /etc/ssh/ssh_host_ecdsa_key
-HostKey /etc/ssh/ssh_host_ed25519_key
+
+KexAlgorithms curve25519-sha256@libssh.org,ecdh-sha2-nistp521,ecdh-sha2-nistp384,ecdh-sha2-nistp256,diffie-hellman-group-exchange-sha256
+Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
+MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256,umac-128@openssh.com
 
 StrictModes yes
 
 SyslogFacility AUTH
 LogLevel VERBOSE
-
-Ciphers chacha20-poly1305@openssh.com,aes256-gcm@openssh.com,aes128-gcm@openssh.com,aes256-ctr,aes192-ctr,aes128-ctr
-MACs hmac-sha2-512-etm@openssh.com,hmac-sha2-256-etm@openssh.com,umac-128-etm@openssh.com,hmac-sha2-512,hmac-sha2-256
-KexAlgorithms sntrup761x25519-sha512@openssh.com,curve25519-sha256@libssh.org,diffie-hellman-group-exchange-sha256
 
 LoginGraceTime 30s
 MaxAuthTries 2
@@ -353,38 +359,14 @@ setup_fail2ban() {
     echo -e "$GRAY_LINE"
     if [[ $fail2ban == [yY] ]];
     then
-        cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
-
-cat << EOF > /etc/fail2ban/jail.d/sshd.local
-[sshd]
-enabled=true
-filter=sshd
-mode=normal
-port=22
-protocol=tcp
-logpath=/var/log/auth.log
-maxretry=5
-bantime=-1
-ignoreip = 127.0.0.0/8 ::1
+    curl -s https://packagecloud.io/install/repositories/crowdsec/crowdsec/script.deb.sh | bash >/dev/null 2>&1
+    apt install crowdsec crowdsec-firewall-bouncer-iptables -y >/dev/null 2>&1
+cat << EOF > "/etc/crowdsec/config.yaml.local"
+db_config:
+    use_wal: true
 EOF
-
-cat << EOF > /etc/fail2ban/jail.d/ufw.local
-[ufw]
-enabled=true
-filter=ufw.aggressive
-action=iptables-allports
-logpath=/var/log/ufw.log
-maxretry=1
-bantime=-1
-EOF
-
-cat << EOF > /etc/fail2ban/filter.d/ufw.aggressive.conf
-[Definition]
-failregex = [UFW BLOCK].+SRC=<HOST> DST
-ignoreregex =
-EOF
-        systemctl enable fail2ban >/dev/null 2>&1
-        systemctl start fail2ban >/dev/null 2>&1
+        systemctl enable --now crowdsec.service >/dev/null 2>&1
+        echo "0 2 * * * /usr/bin/cscli hub update && /usr/bin/cscli hub upgrade > /dev/null 2>&1" >> /var/spool/cron/crontabs/root 
         echo -e "[...] Fail2Ban configured:  \t\t ${aCOLOUR[0]} [DONE]"${COLOUR_RESET}
     else
         echo -e "[...] Fail2Ban configured:  \t\t ${aCOLOUR[2]} [SKIPPED]"${COLOUR_RESET}
